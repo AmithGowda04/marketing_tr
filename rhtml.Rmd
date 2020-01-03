@@ -1,0 +1,65 @@
+#clean the env
+rm(list=ls(all=T))
+
+#set the working directory 
+setwd("C:/Users/amith/Desktop/project/R code")
+
+#load the libraries
+x = c("ggplot2", "corrgram", "DMwR", "caret", "randomForest", "unbalanced", "C50", "dummies", "e1071", "Information",
+     "MASS", "rpart", "gbm", "ROSE", 'sampling', 'DataCombine', 'inTrees')
+
+#install packages
+lapply(x , require, character.only =TRUE)
+rm(x)
+
+##read the data
+marketing_train=read.csv("marketing_tr.csv", header = T, na.strings = c(" ", "", "NA"))
+
+str(marketing_train)
+
+##exploratory data analysis(Univariate Analysis and Variable Consolidation)
+marketing_train$schooling[marketing_train$schooling %in% "illiterate"] = "unknown"
+marketing_train$schooling[marketing_train$schooling %in% c("basic.4y","basic.6y","basic.9y","high.school","professional.course")] = "high.school"
+marketing_train$default[marketing_train$default %in% "yes"] = "unknown"
+marketing_train$default = as.factor(as.character(marketing_train$default))
+marketing_train$marital[marketing_train$marital %in% "unknown"] = "married"
+marketing_train$marital = as.factor(as.character(marketing_train$marital))
+marketing_train$month[marketing_train$month %in% c("sep","oct","mar","dec")] = "dec"
+marketing_train$month[marketing_train$month %in% c("aug","jul","jun","may","nov")] = "jun"
+marketing_train$month = as.factor(as.character(marketing_train$month))
+marketing_train$loan[marketing_train$loan %in% "unknown"] = "no"
+marketing_train$loan = as.factor(as.character(marketing_train$loan))
+marketing_train$schooling = as.factor(as.character(marketing_train$schooling))
+marketing_train$profession[marketing_train$profession %in% c("management","unknown","unemployed","admin.")] = "admin."
+marketing_train$profession[marketing_train$profession %in% c("blue-collar","housemaid","services","self-employed","entrepreneur","technician")] = "blue-collar"
+marketing_train$profession = as.factor(as.character(marketing_train$profession))
+
+
+
+#####missing value analysis####
+
+#count of missing values in a particular value(total sum)
+sum(is.na(marketing_train$custAge))
+
+#create a dataframe with missing percentage
+missing_val = data.frame(apply(marketing_train , 2, function(x) sum(is.na(x))))
+
+#convert row names into columns
+missing_val$columns=row.names(missing_val)
+row.names(missing_val)=NULL
+
+#rename the variable name
+names(missing_val)[1]="missing_percentage"
+
+#calculate the percentage
+missing_val$missing_percentage = (missing_val$missing_percentage /nrow(marketing_train))*100
+
+#arrange in descending order
+missing_val = missing_val[order(-missing_val$missing_percentage),]
+
+#re-arrange the columns
+missing_val = missing_val[,c(2,1)]
+
+#write in csv file
+write.csv(missing_val, "missing_percentage" , row.names=F)
+
