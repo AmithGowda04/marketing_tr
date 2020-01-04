@@ -157,6 +157,72 @@ marketing_train = knnImputation(marketing_train , k=3)
 ## error occured to due to shortage of observations after taking out all the missing values
 
 
+# #################################Feature Selection################################################
+## Correlation Plot 
+corrgram(marketing_train[,numeric_index], order = F,
+         upper.panel=panel.pie, text.panel=panel.txt, main = "Correlation Plot")
+
+## Chi-squared Test of Independence
+factor_index = sapply(marketing_train,is.factor)
+factor_data = marketing_train[,factor_index]
+
+for (i in 1:10)
+{
+  print(names(factor_data)[i])
+  print(chisq.test(table(factor_data$responded,factor_data[,i])))
+}
+
+## Dimension Reduction
+marketing_train = subset(marketing_train, 
+                          select = -c(pdays,emp.var.rate,day_of_week, loan, housing))
+
+# #################################Feature Scaling################################################
+# Normality check
+qqnorm(marketing_train$custAge)
+hist(marketing_train$campaign)
+
+# Normalisation
+cnames = c("custAge","campaign","previous","cons.price.idx","cons.conf.idx","euribor3m","nr.employed",
+           "pmonths","pastEmail")
+
+for(i in cnames){
+  print(i)
+  marketing_train[,i] = (marketing_train[,i] - min(marketing_train[,i]))/
+                                (max(marketing_train[,i] - min(marketing_train[,i])))
+}
+
+# Standardisation
+ for(i in cnames){
+   print(i)
+   marketing_train[,i] = (marketing_train[,i] - mean(marketing_train[,i]))/
+                                  sd(marketing_train[,i])
+}
+
+# ############################################Sampling#############################################
+# ##Simple Random Sampling
+data_sample = marketing_train[sample(nrow(marketing_train), 4000, replace = F), ]
+ 
+# ##Stratified Sampling
+ stratas = strata(marketing_train, c("profession"), size = c(100, 199, 10, 5), method = "srswor")
+ stratified_data = getdata(marketing_train, stratas)
+ 
+# ##Systematic sampling
+# #Function to generate Kth index
+ sys.sample = function(N,n){
+   k = ceiling(N/n)
+   r = sample(1:k, 1)
+   sys.samp = seq(r, r + k*(n-1), k)
+ }
+ 
+# lis = sys.sample(7414, 400) #select the repective rows
+ 
+# #Create index variable in the data
+ marketing_train$index = 1:7414
+ 
+# #Extract subset from whole data
+systematic_data = marketing_train[which(marketing_train$index %in% lis),]
+
+
 
 
 
