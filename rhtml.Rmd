@@ -72,7 +72,8 @@ numeric_data = marketing_train[,numeric_index]
 #store the numeric data in the columns
 cnames = colnames(numeric_data)
  
- for (i in 1:length(cnames))
+#using the ggplot to all the variables to plot the graph by assigning the values from (gn1 to gn11) for the independent vars
+for (i in 1:length(cnames))
  {
    assign(paste0("gn",i), ggplot(aes_string(y = (cnames[i]), x = "responded"), data = subset(marketing_train))+ 
             stat_boxplot(geom = "errorbar", width = 0.5) +
