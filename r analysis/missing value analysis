@@ -1,0 +1,53 @@
+##### missing value analysis ####
+
+# count of missing values in a particular value(total sum)
+sum(is.na(marketing_train$custAge))
+
+# create a dataframe with missing percentage
+missing_val = data.frame(apply(marketing_train , 2, function(x) sum(is.na(x))))
+
+# convert row names into columns
+missing_val$columns=row.names(missing_val)
+row.names(missing_val)=NULL
+
+# rename the variable name
+names(missing_val)[1]="missing_percentage"
+
+# calculate the percentage
+missing_val$missing_percentage = (missing_val$missing_percentage /nrow(marketing_train))*100
+# arrange in descending order
+missing_val = missing_val[order(-missing_val$missing_percentage),]
+# re-arrange the columns
+missing_val = missing_val[,c(2,1)]
+# write in csv file
+write.csv(missing_val, "missing_percentage" , row.names=F)
+## use the impute methods(mean , median & KNN) to apply the missing values in the dataset##
+# the method which gives the nearest value will be selected and imputation will be done#
+## in order to do that select the  existing value value in a column from any variable##
+# selecting the existing value in the dataset
+marketing_train[70,1] #29(value of [70,1])
+marketing_train[70,1] = NA
+# actual value = 29
+# mean = 40.01
+# median = 38
+# knn = 36.18 (best method as it is nearest to the actual value 29)
+# after imputing the each method make sure to do the exploratory analysis once again
+# Mean Method
+marketing_train$custAge[is.na(marketing_train$custAge)] = mean(marketing_train$custAge, na.rm = T)
+# median method
+marketing_train$custAge[is.na(marketing_tain$custAge)] = median(marketing_train$custAge , na.rm =T)
+# kNN Imputation(value of k always to be an odd number)
+marketing_train = knnImputation(marketing_train, k = 3)
+# check the missing values in the dataset
+sum(is.na(marketing_train))
+# write the missing values in a csv file
+write.csv(marketing_train, 'marketing_train_missing.csv', row.names = F)
+## Data Manupulation : convert string categories into factor numeric
+for(i in 1:ncol(marketing_train)){
+  
+  if(class(marketing_train[,i]) == 'factor'){
+    
+    marketing_train[,i] = factor(marketing_train[,i], labels=(1:length(levels(factor(marketing_train[,i])))))
+    
+  }
+}
