@@ -1,0 +1,18 @@
+# #################################Feature Scaling################################################
+# Normality check
+qqnorm(marketing_train$custAge)
+hist(marketing_train$campaign)
+# Normalisation
+cnames = c("custAge","campaign","previous","cons.price.idx","cons.conf.idx","euribor3m","nr.employed",
+           "pmonths","pastEmail")
+for(i in cnames){
+  print(i)
+  marketing_train[,i] = (marketing_train[,i] - min(marketing_train[,i]))/
+                                (max(marketing_train[,i] - min(marketing_train[,i])))
+}
+# Standardisation
+ for(i in cnames){
+   print(i)
+   marketing_train[,i] = (marketing_train[,i] - mean(marketing_train[,i]))/
+                                  sd(marketing_train[,i])
+}
