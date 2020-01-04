@@ -1,23 +1,23 @@
-#clean the env
+# clean the env
 rm(list=ls(all=T))
 
-#set the working directory 
+# set the working directory 
 setwd("C:/Users/amith/Desktop/project/R code")
 
-#load the libraries
+# load the libraries
 x = c("ggplot2", "corrgram", "DMwR", "caret", "randomForest", "unbalanced", "C50", "dummies", "e1071", "Information",
      "MASS", "rpart", "gbm", "ROSE", 'sampling', 'DataCombine', 'inTrees')
 
-#install packages
+# install packages
 lapply(x , require, character.only =TRUE)
 rm(x)
 
-##read the data
+## read the data
 marketing_train=read.csv("marketing_tr.csv", header = T, na.strings = c(" ", "", "NA"))
 
 str(marketing_train)
 
-##exploratory data analysis(Univariate Analysis and Variable Consolidation)
+## exploratory data analysis(Univariate Analysis and Variable Consolidation)
 
 marketing_train$schooling[marketing_train$schooling %in% "illiterate"] = "unknown"
 marketing_train$schooling[marketing_train$schooling %in% c("basic.4y","basic.6y","basic.9y","high.school","professional.course")] = "high.school"
@@ -37,50 +37,61 @@ marketing_train$profession = as.factor(as.character(marketing_train$profession))
 
 
 
-#####missing value analysis####
+##### missing value analysis ####
 
-#count of missing values in a particular value(total sum)
+# count of missing values in a particular value(total sum)
 sum(is.na(marketing_train$custAge))
 
-#create a dataframe with missing percentage
+# create a dataframe with missing percentage
 missing_val = data.frame(apply(marketing_train , 2, function(x) sum(is.na(x))))
 
-#convert row names into columns
+# convert row names into columns
 missing_val$columns=row.names(missing_val)
 row.names(missing_val)=NULL
 
-#rename the variable name
+# rename the variable name
 names(missing_val)[1]="missing_percentage"
 
-#calculate the percentage
+# calculate the percentage
 missing_val$missing_percentage = (missing_val$missing_percentage /nrow(marketing_train))*100
 
-#arrange in descending order
+# arrange in descending order
 missing_val = missing_val[order(-missing_val$missing_percentage),]
 
-#re-arrange the columns
+# re-arrange the columns
 missing_val = missing_val[,c(2,1)]
 
-#write in csv file
+# write in csv file
 write.csv(missing_val, "missing_percentage" , row.names=F)
 
-##use the impute methods(mean , median & KNN) to apply the missing values in the dataset##
-#the method which gives the nearest value will be selected and imputation will be done#
-##in order to do that select the  existing value value in a column from any variable##
+## use the impute methods(mean , median & KNN) to apply the missing values in the dataset##
+# the method which gives the nearest value will be selected and imputation will be done#
+## in order to do that select the  existing value value in a column from any variable##
 
-#selecting the existing value in the dataset
+# selecting the existing value in the dataset
 marketing_train[70,1] #29(value of [70,1])
+marketing_train[70,1] = NA
 
-actual value = 29
-mean = 40.01
-median = 38
-knn = 36.18
+# actual value = 29
+# mean = 40.01
+# median = 38
+# knn = 36.18 (best method as it is nearest to the actual value 29)
+# after imputing the each method make sure to do the exploratory analysis once again
 
-#Mean Method
+# Mean Method
 marketing_train$custAge[is.na(marketing_train$custAge)] = mean(marketing_train$custAge, na.rm = T)
 
-#median method
+# median method
 marketing_train$custAge[is.na(marketing_tain$custAge)] = median(marketing_train$custAge , na.rm =T)
+
+# kNN Imputation(value of k always to be an odd number)
+marketing_train = knnImputation(marketing_train, k = 3)
+
+# check the missing values in the dataset
+sum(is.na(marketing_train))
+
+# write the missing values in a csv file
+write.csv(marketing_train, 'marketing_train_missing.csv', row.names = F)
 
 ############################################Outlier Analysis#############################################
 # ## BoxPlots - Distribution and Outlier Check
@@ -88,10 +99,10 @@ numeric_index = sapply(marketing_train,is.numeric) #selecting only numeric
 
 numeric_data = marketing_train[,numeric_index]
 
-#store the numeric data in the columns
+# store the numeric data in the columns
 cnames = colnames(numeric_data)
  
-#using the ggplot to all the variables to plot the graph by assigning the values from (gn1 to gn11) for the independent vars
+# using the ggplot to all the variables to plot the graph by assigning the values from (gn1 to gn11) for the independent vars
 for (i in 1:length(cnames))
  {
    assign(paste0("gn",i), ggplot(aes_string(y = (cnames[i]), x = "responded"), data = subset(marketing_train))+ 
@@ -109,8 +120,8 @@ gridExtra::grid.arrange(gn1,gn5,gn2,ncol=3)
 gridExtra::grid.arrange(gn6,gn7,ncol=2)
 gridExtra::grid.arrange(gn8,gn9,ncol=2)
 
-##after the outlier analysis id done make sure to remove it for further analysis 
+## after the outlier analysis id done make sure to remove it for further analysis 
 
-#remove the outliers using boxplot method
+# remove the outliers using boxplot method
 
 
