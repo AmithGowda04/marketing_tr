@@ -93,6 +93,16 @@ sum(is.na(marketing_train))
 # write the missing values in a csv file
 write.csv(marketing_train, 'marketing_train_missing.csv', row.names = F)
 
+## Data Manupulation : convert string categories into factor numeric
+for(i in 1:ncol(marketing_train)){
+  
+  if(class(marketing_train[,i]) == 'factor'){
+    
+    marketing_train[,i] = factor(marketing_train[,i], labels=(1:length(levels(factor(marketing_train[,i])))))
+    
+  }
+}
+
 ############################################Outlier Analysis#############################################
 # ## BoxPlots - Distribution and Outlier Check
 numeric_index = sapply(marketing_train,is.numeric) #selecting only numeric
@@ -120,8 +130,10 @@ gridExtra::grid.arrange(gn1,gn5,gn2,ncol=3)
 gridExtra::grid.arrange(gn6,gn7,ncol=2)
 gridExtra::grid.arrange(gn8,gn9,ncol=2)
 
-## after the outlier analysis id done make sure to remove it for further analysis 
+## after the outlier analysis is done make sure to remove it for further analysis 
 
 # remove the outliers using boxplot method
+df = marketing_train
+
 
 
