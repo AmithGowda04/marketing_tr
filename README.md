@@ -12,5 +12,7 @@ Analysis done for the given dataset :
 2. Outlier analysis
 3. Feature selection
 4. Feature scaling
-5. Sampling &
-6. Model development
+5. Sampling 
+
+Machine Learning
+1. Model development
