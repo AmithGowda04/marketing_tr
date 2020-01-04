@@ -1,0 +1,15 @@
+ #################################Feature Selection################################################
+## Correlation Plot 
+corrgram(marketing_train[,numeric_index], order = F,
+         upper.panel=panel.pie, text.panel=panel.txt, main = "Correlation Plot")
+## Chi-squared Test of Independence
+factor_index = sapply(marketing_train,is.factor)
+factor_data = marketing_train[,factor_index]
+for (i in 1:10)
+{
+  print(names(factor_data)[i])
+  print(chisq.test(table(factor_data$responded,factor_data[,i])))
+}
+## Dimension Reduction
+marketing_train = subset(marketing_train, 
+                          select = -c(pdays,emp.var.rate,day_of_week, loan, housing))
