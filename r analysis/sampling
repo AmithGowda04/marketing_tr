@@ -1,0 +1,24 @@
+
+# ############################################Sampling#############################################
+# ##Simple Random Sampling
+data_sample = marketing_train[sample(nrow(marketing_train), 4000, replace = F), ]
+ 
+# ##Stratified Sampling
+ stratas = strata(marketing_train, c("profession"), size = c(100, 199, 10, 5), method = "srswor")
+ stratified_data = getdata(marketing_train, stratas)
+ 
+# ##Systematic sampling
+# #Function to generate Kth index
+ sys.sample = function(N,n){
+   k = ceiling(N/n)
+   r = sample(1:k, 1)
+   sys.samp = seq(r, r + k*(n-1), k)
+ }
+ 
+# lis = sys.sample(7414, 400) #select the repective rows
+ 
+# #Create index variable in the data
+ marketing_train$index = 1:7414
+ 
+# #Extract subset from whole data
+systematic_data = marketing_train[which(marketing_train$index %in% lis),]
