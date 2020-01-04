@@ -18,6 +18,7 @@ marketing_train=read.csv("marketing_tr.csv", header = T, na.strings = c(" ", "",
 str(marketing_train)
 
 ##exploratory data analysis(Univariate Analysis and Variable Consolidation)
+
 marketing_train$schooling[marketing_train$schooling %in% "illiterate"] = "unknown"
 marketing_train$schooling[marketing_train$schooling %in% c("basic.4y","basic.6y","basic.9y","high.school","professional.course")] = "high.school"
 marketing_train$default[marketing_train$default %in% "yes"] = "unknown"
@@ -63,9 +64,23 @@ missing_val = missing_val[,c(2,1)]
 #write in csv file
 write.csv(missing_val, "missing_percentage" , row.names=F)
 
+##use the impute methods(mean , median & KNN) to apply the missing values in the dataset##
+#the method which gives the nearest value will be selected and imputation will be done#
+##in order to do that select the  existing value value in a column from any variable##
+
+#selecting the existing value in the dataset
+marketing_train[70,1] #29(value of [70,1])
+
+actual value = 29
+mean = 40.01
+median = 38
+knn = 36.18
 
 #Mean Method
 marketing_train$custAge[is.na(marketing_train$custAge)] = mean(marketing_train$custAge, na.rm = T)
+
+#median method
+marketing_train$custAge[is.na(marketing_tain$custAge)] = median(marketing_train$custAge , na.rm =T)
 
 ############################################Outlier Analysis#############################################
 # ## BoxPlots - Distribution and Outlier Check
