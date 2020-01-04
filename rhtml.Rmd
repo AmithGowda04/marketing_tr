@@ -135,5 +135,29 @@ gridExtra::grid.arrange(gn8,gn9,ncol=2)
 # remove the outliers using boxplot method
 df = marketing_train
 
+# detect the outliers and remove them using boxplot.stats (built in) function
+val =marketing_train$previous[marketing_train$previous %in% boxplot.stats(marketing_train$previous) $out]
+
+# remove the observation which contains the outliers
+marketing_train = marketing_train[which(!marketing_train$previous %in% val),]
+
+marketing_train =df
+
+# loop to remove the outliers from all the observations
+for(i in cnames)
+{
+print(i)
+val = marketing_train[,i][marketing_train[,i]] %in% boxplot.stats(marketing_train[,i])$out]
+marketing_train[,i][marketing_train[,i] %in% val] = NA
+}
+
+# impute knn
+marketing_train = knnImputation(marketing_train , k=3)
+
+## error occured to due to shortage of observations after taking out all the missing values
+
+
+
+
 
 
